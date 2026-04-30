@@ -32,7 +32,7 @@ export default function Login() {
           <div className="mx-auto bg-[#8B0000] w-16 h-16 flex items-center justify-center rounded-full mb-4 shadow-lg">
             <School className="text-white w-8 h-8" />
           </div>
-          <h1 className="text-3xl font-bold text-[#333333]">EduWebPeru</h1>
+          <h1 className="text-3xl font-bold text-[#333333]">EduWebPerú</h1>
           <p className="text-gray-500 text-sm mt-2">Sistema de Gestión Académica</p>
         </div>
 
@@ -91,7 +91,9 @@ export default function Login() {
         
         <div className="mt-8 border-t border-gray-100 pt-6">
            <p className="text-xs text-gray-400 text-center font-medium">
-             Demo: director, profesor, alumno (Clave: 123456)
+            UNIVERSIDAD CESAR VALLEJO | Grupo 4 <br />
+            Curso: Creatividad e innovación    <br />
+            Magister: Ricardo, Sal Y Rosas Flores 
            </p>
         </div>
       </motion.div>

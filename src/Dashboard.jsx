@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { AuthContext } from './AuthContext';
 import { studentsData as initialStudents, initialAnnouncements } from './mockData';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut, Search, User as UserIcon, BookOpen, AlertTriangle, Send, Award, Calendar } from 'lucide-react';
+import { LogOut, Search, User as UserIcon, BookOpen, AlertTriangle, Send, Award, Calendar, ThumbsUp } from 'lucide-react';
 import CourseDetail from './CourseDetail';
 
 const formatNota = (nota) => nota < 10 ? `0${nota}` : `${nota}`;
@@ -39,8 +39,8 @@ export default function Dashboard() {
           <div className="flex justify-between h-16">
             <div className="flex items-center">
               <Award className="w-8 h-8 text-[#C5A059] mr-2" />
-              <span className="font-bold text-lg sm:text-xl tracking-tight truncate hidden sm:block">I.E. Institución Emblemática EduWebPeru</span>
-              <span className="font-bold text-xl tracking-tight sm:hidden">EduWebPeru</span>
+              <span className="font-bold text-lg sm:text-xl tracking-tight truncate hidden sm:block">I.E. Institución Emblemática AlcolePeru</span>
+              <span className="font-bold text-xl tracking-tight sm:hidden">AlcolePeru</span>
             </div>
             <div className="flex items-center space-x-4">
               <div className="hidden sm:flex items-center text-sm font-medium bg-white/10 px-4 py-2 rounded-[12px]">
@@ -434,6 +434,88 @@ function TeacherDashboard({ students, setStudents, announcements, setAnnouncemen
   );
 }
 
+const DynamicAcademicStatus = ({ student }) => {
+  if (!student || !student.courses) return null;
+
+  let totalPromedio = 0;
+  student.courses.forEach(c => {
+    const prom = getPromedio(c.notes.n1, c.notes.n2, c.notes.pc, c.notes.ef);
+    totalPromedio += prom;
+  });
+  const overallAvg = Math.round(totalPromedio / student.courses.length);
+
+  let status = 'green';
+  if (overallAvg < 11) status = 'red';
+  else if (overallAvg >= 11 && overallAvg <= 14) status = 'yellow';
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}
+      className="bg-white rounded-[16px] shadow-sm border border-gray-100 overflow-hidden h-full flex flex-col"
+    >
+       <div className="bg-[#8B0000] text-white px-5 py-4 font-semibold flex items-center justify-between relative overflow-hidden">
+        <div className="flex items-center">
+          <Award className="w-5 h-5 mr-2 text-[#C5A059] relative z-10" />
+          <h3 className="text-sm tracking-wide relative z-10">Estado Académico</h3>
+        </div>
+        <div className="text-xs bg-white/20 px-3 py-1 rounded-full relative z-10 font-bold border border-white/20 shadow-sm">
+           Promedio: {overallAvg}
+        </div>
+        <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-10 -mt-10"></div>
+      </div>
+      
+      <div className="p-6 flex-1 flex flex-col justify-center items-center">
+        {/* Luces del Semáforo */}
+        <div className="flex justify-center space-x-6 mb-8 bg-gray-50 px-6 py-4 rounded-full border border-gray-200 shadow-inner">
+           {/* Red */}
+           <div className={`w-12 h-12 rounded-full border-4 transition-all duration-500 flex items-center justify-center ${status === 'red' ? 'bg-[#B91C1C] border-[#fca5a5] shadow-[0_0_25px_rgba(185,28,28,0.7)] scale-110' : 'bg-gray-200 border-gray-300 opacity-40'}`}>
+              {status === 'red' && <div className="w-4 h-4 bg-white/40 rounded-full blur-[2px]"></div>}
+           </div>
+           {/* Yellow */}
+           <div className={`w-12 h-12 rounded-full border-4 transition-all duration-500 flex items-center justify-center ${status === 'yellow' ? 'bg-[#EAB308] border-[#fef08a] shadow-[0_0_25px_rgba(234,179,8,0.7)] scale-110' : 'bg-gray-200 border-gray-300 opacity-40'}`}>
+              {status === 'yellow' && <div className="w-4 h-4 bg-white/40 rounded-full blur-[2px]"></div>}
+           </div>
+           {/* Green */}
+           <div className={`w-12 h-12 rounded-full border-4 transition-all duration-500 flex items-center justify-center ${status === 'green' ? 'bg-[#059669] border-[#6ee7b7] shadow-[0_0_25px_rgba(5,150,105,0.7)] scale-110' : 'bg-gray-200 border-gray-300 opacity-40'}`}>
+              {status === 'green' && <div className="w-4 h-4 bg-white/40 rounded-full blur-[2px]"></div>}
+           </div>
+        </div>
+        
+        {/* Mensaje Activo */}
+        <div className="text-center w-full">
+           {status === 'green' && (
+              <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="flex flex-col items-center">
+                 <div className="bg-[#059669]/10 p-4 rounded-full mb-4 text-[#059669] ring-4 ring-[#059669]/5">
+                    <ThumbsUp className="w-10 h-10" />
+                 </div>
+                 <h4 className="text-xl font-extrabold text-[#333333] mb-2 tracking-tight">¡Eres un Superestudiante!</h4>
+                 <p className="text-sm text-gray-500 font-medium px-4">¡Sigue así, vas por excelente camino!</p>
+              </motion.div>
+           )}
+           {status === 'yellow' && (
+              <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="flex flex-col items-center">
+                 <div className="bg-[#EAB308]/10 p-4 rounded-full mb-4 text-[#B45309] ring-4 ring-[#EAB308]/5">
+                    <Search className="w-10 h-10" />
+                 </div>
+                 <h4 className="text-xl font-extrabold text-[#333333] mb-2 tracking-tight">¡Estás muy cerca!</h4>
+                 <p className="text-sm text-gray-500 font-medium px-4">Ponle la lupa a los cursos más difíciles y mejorarás.</p>
+              </motion.div>
+           )}
+           {status === 'red' && (
+              <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="flex flex-col items-center">
+                 <div className="bg-[#B91C1C]/10 p-4 rounded-full mb-4 text-[#B91C1C] ring-4 ring-[#B91C1C]/5">
+                    <BookOpen className="w-10 h-10" />
+                 </div>
+                 <h4 className="text-xl font-extrabold text-[#333333] mb-2 tracking-tight">¡Necesitas un refuerzo!</h4>
+                 <p className="text-sm text-gray-500 font-medium px-4">Es momento de abrir los libros y dedicar más tiempo.</p>
+              </motion.div>
+           )}
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
 function StudentDashboard({ student, announcements }) {
   const [activeCourse, setActiveCourse] = useState(null);
 
@@ -444,16 +526,22 @@ function StudentDashboard({ student, announcements }) {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold border-b-2 border-[#C5A059] pb-2 inline-block">Libreta Digital</h2>
-        <span className="bg-white px-4 py-2 rounded-full shadow-sm text-sm font-semibold border border-gray-100">
-          Periodo 2026
-        </span>
+    <div className="space-y-6">
+      <div className="flex flex-col gap-2 mb-6">
+        <div className="flex items-center gap-4">
+          <h2 className="text-2xl font-bold border-b-2 border-[#C5A059] pb-2 inline-block">Libreta Digital</h2>
+          <span className="bg-white px-4 py-2 rounded-full shadow-sm text-sm font-semibold border border-gray-100 text-[#8B0000]">
+            Periodo 2026
+          </span>
+        </div>
+        <p className="text-gray-500 text-sm font-medium">Panel de control y rendimiento académico</p>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {student.courses.map((c, i) => {
+      <div className="flex flex-col xl:flex-row gap-8 items-start">
+        {/* Main Content: Courses */}
+        <div className="w-full xl:w-2/3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {student.courses.map((c, i) => {
           const prom = getPromedio(c.notes.n1, c.notes.n2, c.notes.pc, c.notes.ef);
           const attendancePercent = (c.attendanceTotal / 200) * 100;
           const isCritical = attendancePercent < 70;
@@ -501,12 +589,17 @@ function StudentDashboard({ student, announcements }) {
             </motion.div>
           );
         })}
-      </div>
+          </div>
+        </div>
 
-      <div className="bg-white p-6 rounded-[16px] shadow-sm border border-gray-100 mt-8">
-        <h3 className="text-xl font-bold mb-6 flex items-center text-[#333333]"><Calendar className="w-6 h-6 mr-3 text-[#C5A059]"/> Mural de Anuncios Institucionales</h3>
-        <div className="space-y-4">
-          <AnimatePresence>
+        {/* Sidebar: Legend & Announcements */}
+        <div className="w-full xl:w-1/3 space-y-8 xl:sticky xl:top-24">
+          <DynamicAcademicStatus student={student} />
+
+          <div className="bg-white p-6 rounded-[16px] shadow-sm border border-gray-100">
+            <h3 className="text-lg font-bold mb-6 flex items-center text-[#333333]"><Calendar className="w-5 h-5 mr-3 text-[#C5A059]"/> Mural de Anuncios</h3>
+            <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+              <AnimatePresence>
             {announcements.map((a) => (
               <motion.div 
                 key={a.id}
@@ -532,6 +625,8 @@ function StudentDashboard({ student, announcements }) {
               <p>No hay anuncios recientes.</p>
             </div>
           )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
